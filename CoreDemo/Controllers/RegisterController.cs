@@ -26,11 +26,11 @@ namespace CoreDemo.Controllers
         {
             WriterValidator wv = new WriterValidator();
             ValidationResult result = wv.Validate(p);
-            if(result.IsValid)
+            if (result.IsValid)
             {
                 p.WriterStatus = true;
                 p.WriterAbout = "Deneme Test";
-                wm.WriterAdd(p);
+                wm.TAdd(p);
                 return RedirectToAction("Index", "Blog");
             }
             else
