@@ -9,15 +9,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CoreDemo.Controllers
+namespace CoreDemo.Areas.Admin.Controllers
 {
-    [AllowAnonymous]
-    public class MessageController : Controller
+    [Area("Admin")]
+    public class AdminMessageController : Controller
     {
         Message2Manager mm = new Message2Manager(new EfMessage2Repository());
         Context c = new Context();
 
-        public IActionResult InBox()
+        public IActionResult Inbox()
         {
             var username = User.Identity.Name;
             var usermail = c.Users.Where(x => x.UserName == username).Select(y => y.Email).FirstOrDefault();
@@ -35,30 +35,24 @@ namespace CoreDemo.Controllers
             return View(values);
         }
 
-        public IActionResult MessageDetails(int id)
-        {
-            var value = mm.TGetByID(id);
-            return View(value);
-        }
-
         [HttpGet]
-        public IActionResult SendMessage()
+        public IActionResult ComposeMessage()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult SendMessage(Message2 p)
+        public IActionResult ComposeMessage(Message2 p)
         {
             var username = User.Identity.Name;
             var usermail = c.Users.Where(x => x.UserName == username).Select(y => y.Email).FirstOrDefault();
-            var writerID = c.Writers.Where(x => x.WriterMail == usermail).Select(y => y.WriterID).FirstOrDefault();
-            p.SenderID = writerID;
+            var writerId = c.Writers.Where(x => x.WriterMail == usermail).Select(y => y.WriterID).FirstOrDefault();
+            p.SenderID = writerId;
             p.ReceiverID = 2;
-            p.MessageStatus = true;
             p.MessageDate = Convert.ToDateTime(DateTime.Now.ToShortDateString());
+            p.MessageStatus = true;
             mm.TAdd(p);
-            return RedirectToAction("InBox");
+            return RedirectToAction("SendBox");
         }
     }
 }
